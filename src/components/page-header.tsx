@@ -15,7 +15,11 @@ function DefaultActions() {
 
   return (
     <div className="flex items-center gap-2">
-      <Input disabled placeholder={isZh ? "\u7b5b\u9009\u5360\u4f4d" : "Placeholder filter"} className="w-48" />
+      <Input
+        disabled
+        placeholder={isZh ? "\u7b5b\u9009\u5360\u4f4d" : "Placeholder filter"}
+        className="w-48"
+      />
       <Button disabled variant="outline">
         {isZh ? "\u64cd\u4f5c" : "Action"}
       </Button>

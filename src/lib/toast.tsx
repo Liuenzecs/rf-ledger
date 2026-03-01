@@ -1,4 +1,12 @@
-﻿import { createContext, type ReactNode, useCallback, useContext, useMemo, useRef, useState } from "react";
+﻿import {
+  createContext,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState
+} from "react";
 import { Button } from "@/components/ui/button";
 
 type ToastVariant = "success" | "error" | "info";
@@ -61,13 +69,23 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
       <div className="pointer-events-none fixed right-4 top-4 z-[100] flex w-full max-w-sm flex-col gap-2">
         {toasts.map((toast) => (
-          <div key={toast.id} className={`pointer-events-auto rounded-xl border p-4 shadow-sm ${toastTone(toast.variant)}`}>
+          <div
+            key={toast.id}
+            className={`pointer-events-auto rounded-xl border p-4 shadow-sm ${toastTone(toast.variant)}`}
+          >
             <div className="flex items-start justify-between gap-3">
               <div className="space-y-1">
                 <p className="text-sm font-medium">{toast.title}</p>
-                {toast.description ? <p className="text-xs text-current/90">{toast.description}</p> : null}
+                {toast.description ? (
+                  <p className="text-xs text-current/90">{toast.description}</p>
+                ) : null}
               </div>
-              <Button variant="ghost" size="sm" className="h-7 px-2" onClick={() => dismissToast(toast.id)}>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 px-2"
+                onClick={() => dismissToast(toast.id)}
+              >
                 x
               </Button>
             </div>

@@ -99,9 +99,13 @@ export function ListPage() {
     () =>
       ({
         title: isZh ? "\u5217\u8868" : "List",
-        description: isZh ? "\u6d4f\u89c8\u4ea4\u6613\u8bb0\u5f55\uff0c\u652f\u6301\u7b5b\u9009\u3001\u7f16\u8f91\u4e0e\u5220\u9664\u3002" : "Browse records with filters, edit and delete.",
+        description: isZh
+          ? "\u6d4f\u89c8\u4ea4\u6613\u8bb0\u5f55\uff0c\u652f\u6301\u7b5b\u9009\u3001\u7f16\u8f91\u4e0e\u5220\u9664\u3002"
+          : "Browse records with filters, edit and delete.",
         tableTitle: isZh ? "\u4ea4\u6613\u5217\u8868" : "Transactions",
-        tableDesc: isZh ? "\u7ed3\u679c\u6765\u81ea\u672c\u5730 SQLite\uff0c\u6309\u65f6\u95f4\u5012\u5e8f\u6392\u5217\u3002" : "Results from local SQLite ordered by recent first.",
+        tableDesc: isZh
+          ? "\u7ed3\u679c\u6765\u81ea\u672c\u5730 SQLite\uff0c\u6309\u65f6\u95f4\u5012\u5e8f\u6392\u5217\u3002"
+          : "Results from local SQLite ordered by recent first.",
         filterTitle: isZh ? "\u7b5b\u9009" : "Filters",
         filterDesc: isZh
           ? "\u6309\u65e5\u671f\u8303\u56f4\u3001\u7c7b\u578b\u3001\u5206\u7c7b\u4e0e\u5173\u952e\u8bcd\u8fdb\u884c SQL \u7b5b\u9009\u3002"
@@ -113,7 +117,9 @@ export function ListPage() {
         expense: isZh ? "\u652f\u51fa" : "Expense",
         category: isZh ? "\u5206\u7c7b" : "Category",
         keyword: isZh ? "\u5173\u952e\u8bcd" : "Keyword",
-        keywordPlaceholder: isZh ? "\u5907\u6ce8 / \u5206\u7c7b / \u8d26\u6237" : "note / category / account",
+        keywordPlaceholder: isZh
+          ? "\u5907\u6ce8 / \u5206\u7c7b / \u8d26\u6237"
+          : "note / category / account",
         apply: isZh ? "\u5e94\u7528" : "Apply",
         reset: isZh ? "\u91cd\u7f6e" : "Reset",
         refresh: isZh ? "\u5237\u65b0" : "Refresh",
@@ -123,26 +129,38 @@ export function ListPage() {
         actions: isZh ? "\u64cd\u4f5c" : "Actions",
         noNote: isZh ? "\u65e0\u5907\u6ce8" : "No note",
         noDataTitle: isZh ? "\u6682\u65e0\u8bb0\u5f55" : "No records",
-        noDataDesc: isZh ? "\u5f53\u524d\u7b5b\u9009\u6761\u4ef6\u4e0b\u6ca1\u6709\u5339\u914d\u6570\u636e\u3002" : "No transactions match current filters.",
+        noDataDesc: isZh
+          ? "\u5f53\u524d\u7b5b\u9009\u6761\u4ef6\u4e0b\u6ca1\u6709\u5339\u914d\u6570\u636e\u3002"
+          : "No transactions match current filters.",
         noDataCta: isZh ? "\u8c03\u6574\u7b5b\u9009" : "Adjust Filters",
         edit: isZh ? "\u7f16\u8f91" : "Edit",
         del: isZh ? "\u5220\u9664" : "Delete",
         loading: isZh ? "\u52a0\u8f7d\u4e2d" : "Loading",
         loadFailed: isZh ? "\u52a0\u8f7d\u5931\u8d25" : "Load failed",
         refreshed: isZh ? "\u5217\u8868\u5df2\u5237\u65b0" : "List refreshed",
-        invalidRange: isZh ? "\u8d77\u6b62\u65f6\u95f4\u683c\u5f0f\u65e0\u6548\u3002" : "Invalid date range.",
-        invalidAmount: isZh ? "\u8bf7\u8f93\u5165\u975e 0 \u7684\u91d1\u989d\u3002" : "Amount must be non-zero.",
-        requiredFields: isZh ? "\u5206\u7c7b\u548c\u8d26\u6237\u4e0d\u80fd\u4e3a\u7a7a\u3002" : "Category and account are required.",
+        invalidRange: isZh
+          ? "\u8d77\u6b62\u65f6\u95f4\u683c\u5f0f\u65e0\u6548\u3002"
+          : "Invalid date range.",
+        invalidAmount: isZh
+          ? "\u8bf7\u8f93\u5165\u975e 0 \u7684\u91d1\u989d\u3002"
+          : "Amount must be non-zero.",
+        requiredFields: isZh
+          ? "\u5206\u7c7b\u548c\u8d26\u6237\u4e0d\u80fd\u4e3a\u7a7a\u3002"
+          : "Category and account are required.",
         save: isZh ? "\u4fdd\u5b58" : "Save",
         saving: isZh ? "\u4fdd\u5b58\u4e2d..." : "Saving...",
         cancel: isZh ? "\u53d6\u6d88" : "Cancel",
         editTitle: isZh ? "\u7f16\u8f91\u4ea4\u6613" : "Edit Transaction",
-        editDesc: isZh ? "\u66f4\u65b0\u540e\u5c06\u7acb\u5373\u5199\u5165\u6570\u636e\u5e93\u3002" : "Changes will be saved immediately.",
+        editDesc: isZh
+          ? "\u66f4\u65b0\u540e\u5c06\u7acb\u5373\u5199\u5165\u6570\u636e\u5e93\u3002"
+          : "Changes will be saved immediately.",
         updateOk: isZh ? "\u66f4\u65b0\u6210\u529f" : "Updated",
         updateFail: isZh ? "\u66f4\u65b0\u5931\u8d25" : "Update failed",
         deleteTitle: isZh ? "\u5220\u9664\u4ea4\u6613" : "Delete Transaction",
         deleteDesc: (id: number) =>
-          isZh ? `\u786e\u8ba4\u5220\u9664\u4ea4\u6613 #${id}\uff1f\u6b64\u64cd\u4f5c\u4e0d\u53ef\u64a4\u9500\u3002` : `Delete transaction #${id}? This action cannot be undone.`,
+          isZh
+            ? `\u786e\u8ba4\u5220\u9664\u4ea4\u6613 #${id}\uff1f\u6b64\u64cd\u4f5c\u4e0d\u53ef\u64a4\u9500\u3002`
+            : `Delete transaction #${id}? This action cannot be undone.`,
         deleting: isZh ? "\u5220\u9664\u4e2d..." : "Deleting...",
         deleteConfirm: isZh ? "\u786e\u8ba4\u5220\u9664" : "Confirm Delete",
         deleteOk: isZh ? "\u5220\u9664\u6210\u529f" : "Deleted",
@@ -403,7 +421,11 @@ export function ListPage() {
               <Skeleton className="h-16 w-full" />
             </div>
           ) : transactions.length === 0 ? (
-            <EmptyState title={text.noDataTitle} description={text.noDataDesc} ctaLabel={text.noDataCta} />
+            <EmptyState
+              title={text.noDataTitle}
+              description={text.noDataDesc}
+              ctaLabel={text.noDataCta}
+            />
           ) : (
             <div className="space-y-3">
               <div className="hidden rounded-xl border bg-muted/40 px-4 py-3 text-xs font-medium text-muted-foreground md:grid md:grid-cols-[220px_1fr_180px_160px]">
@@ -418,7 +440,9 @@ export function ListPage() {
                   key={item.id}
                   className="rounded-xl border bg-card px-4 py-3 shadow-sm transition-colors hover:bg-muted/20 md:grid md:grid-cols-[220px_1fr_180px_160px] md:items-center md:gap-3"
                 >
-                  <p className="text-sm text-muted-foreground">{formatDateTime(item.occurred_at)}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {formatDateTime(item.occurred_at)}
+                  </p>
 
                   <div className="mt-2 space-y-1 md:mt-0">
                     <p className="text-sm font-medium">
@@ -427,15 +451,23 @@ export function ListPage() {
                     <p className="text-sm text-muted-foreground">{item.note || text.noNote}</p>
                   </div>
 
-                  <p className={`mt-2 text-right text-sm font-medium md:mt-0 ${item.type === "income" ? "text-emerald-600" : "text-rose-600"}`}>
-                    {item.type === "income" ? text.income : text.expense} | {currencyFormatter.format(item.amount_cents / 100)}
+                  <p
+                    className={`mt-2 text-right text-sm font-medium md:mt-0 ${item.type === "income" ? "text-emerald-600" : "text-rose-600"}`}
+                  >
+                    {item.type === "income" ? text.income : text.expense} |{" "}
+                    {currencyFormatter.format(item.amount_cents / 100)}
                   </p>
 
                   <div className="mt-2 flex justify-end gap-2 md:mt-0">
                     <Button variant="ghost" size="sm" onClick={() => openEditDialog(item)}>
                       {text.edit}
                     </Button>
-                    <Button variant="ghost" size="sm" className="text-rose-600 hover:text-rose-700" onClick={() => setDeletingTx(item)}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-rose-600 hover:text-rose-700"
+                      onClick={() => setDeletingTx(item)}
+                    >
                       {text.del}
                     </Button>
                   </div>
@@ -453,17 +485,38 @@ export function ListPage() {
         </CardHeader>
         <CardContent className="space-y-4 p-6 pt-0">
           <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-5">
-            <Input type="datetime-local" value={fromInput} onChange={(event) => setFromInput(event.target.value)} placeholder={text.from} />
-            <Input type="datetime-local" value={toInput} onChange={(event) => setToInput(event.target.value)} placeholder={text.to} />
+            <Input
+              type="datetime-local"
+              value={fromInput}
+              onChange={(event) => setFromInput(event.target.value)}
+              placeholder={text.from}
+            />
+            <Input
+              type="datetime-local"
+              value={toInput}
+              onChange={(event) => setToInput(event.target.value)}
+              placeholder={text.to}
+            />
 
-            <Select value={typeInput} onChange={(event) => setTypeInput(event.target.value as "all" | TransactionType)}>
+            <Select
+              value={typeInput}
+              onChange={(event) => setTypeInput(event.target.value as "all" | TransactionType)}
+            >
               <option value="all">{text.allTypes}</option>
               <option value="income">{text.income}</option>
               <option value="expense">{text.expense}</option>
             </Select>
 
-            <Input placeholder={text.category} value={categoryInput} onChange={(event) => setCategoryInput(event.target.value)} />
-            <Input placeholder={text.keywordPlaceholder} value={keywordInput} onChange={(event) => setKeywordInput(event.target.value)} />
+            <Input
+              placeholder={text.category}
+              value={categoryInput}
+              onChange={(event) => setCategoryInput(event.target.value)}
+            />
+            <Input
+              placeholder={text.keywordPlaceholder}
+              value={keywordInput}
+              onChange={(event) => setKeywordInput(event.target.value)}
+            />
           </div>
 
           <div className="flex flex-wrap gap-2">
@@ -478,7 +531,10 @@ export function ListPage() {
         </CardContent>
       </Card>
 
-      <Dialog open={editingTx !== null} onOpenChange={(open) => (!open ? setEditingTx(null) : null)}>
+      <Dialog
+        open={editingTx !== null}
+        onOpenChange={(open) => (!open ? setEditingTx(null) : null)}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{text.editTitle}</DialogTitle>
@@ -491,7 +547,9 @@ export function ListPage() {
               <Input
                 type="datetime-local"
                 value={editForm.occurredAtLocal}
-                onChange={(event) => setEditForm((prev) => ({ ...prev, occurredAtLocal: event.target.value }))}
+                onChange={(event) =>
+                  setEditForm((prev) => ({ ...prev, occurredAtLocal: event.target.value }))
+                }
               />
             </div>
 
@@ -501,13 +559,20 @@ export function ListPage() {
                 type="number"
                 step="0.01"
                 value={editForm.amountYuan}
-                onChange={(event) => setEditForm((prev) => ({ ...prev, amountYuan: event.target.value }))}
+                onChange={(event) =>
+                  setEditForm((prev) => ({ ...prev, amountYuan: event.target.value }))
+                }
               />
             </div>
 
             <div className="space-y-2">
               <p className="text-sm text-muted-foreground">{text.type}</p>
-              <Select value={editForm.type} onChange={(event) => setEditForm((prev) => ({ ...prev, type: event.target.value as TransactionType }))}>
+              <Select
+                value={editForm.type}
+                onChange={(event) =>
+                  setEditForm((prev) => ({ ...prev, type: event.target.value as TransactionType }))
+                }
+              >
                 <option value="income">{text.income}</option>
                 <option value="expense">{text.expense}</option>
               </Select>
@@ -516,12 +581,16 @@ export function ListPage() {
             <Input
               placeholder={text.category}
               value={editForm.category}
-              onChange={(event) => setEditForm((prev) => ({ ...prev, category: event.target.value }))}
+              onChange={(event) =>
+                setEditForm((prev) => ({ ...prev, category: event.target.value }))
+              }
             />
             <Input
               placeholder={isZh ? "\u8d26\u6237" : "Account"}
               value={editForm.account}
-              onChange={(event) => setEditForm((prev) => ({ ...prev, account: event.target.value }))}
+              onChange={(event) =>
+                setEditForm((prev) => ({ ...prev, account: event.target.value }))
+              }
             />
             <Input
               placeholder={isZh ? "\u5907\u6ce8" : "Note"}
@@ -541,11 +610,16 @@ export function ListPage() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={deletingTx !== null} onOpenChange={(open) => (!open ? setDeletingTx(null) : null)}>
+      <Dialog
+        open={deletingTx !== null}
+        onOpenChange={(open) => (!open ? setDeletingTx(null) : null)}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{text.deleteTitle}</DialogTitle>
-            <DialogDescription>{deletingTx ? text.deleteDesc(deletingTx.id) : ""}</DialogDescription>
+            <DialogDescription>
+              {deletingTx ? text.deleteDesc(deletingTx.id) : ""}
+            </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <DialogClose asChild>

@@ -178,8 +178,7 @@ Expense:
 - text-rose-600
 - bg-rose-50
 
-No raw hex colors.
-No bright red or bright green.
+No raw hex colors. No bright red or bright green.
 
 ---
 
@@ -260,15 +259,15 @@ Not allowed:
 
 ## 7. Milestone Plan
 
-1. M0 – Project scaffold  
-2. M1 – Database & basic CRUD  
-3. M2 – Add page  
-4. M3 – List page  
-5. M4 – Stats backend  
-6. M5 – Dashboard UI  
-7. M6 – UX polish  
-8. M7 – Backup & export  
-9. M8 – Production build  
+1. M0 – Project scaffold
+2. M1 – Database & basic CRUD
+3. M2 – Add page
+4. M3 – List page
+5. M4 – Stats backend
+6. M5 – Dashboard UI
+7. M6 – UX polish
+8. M7 – Backup & export
+9. M8 – Production build
 
 ---
 

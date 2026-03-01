@@ -1,0 +1,39 @@
+﻿name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+          cache: npm
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: cargo fmt --check
+        working-directory: src-tauri
+        run: cargo fmt --check
+
+      - name: cargo clippy
+        working-directory: src-tauri
+        run: cargo clippy --all-targets --all-features

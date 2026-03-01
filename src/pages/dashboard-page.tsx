@@ -1,5 +1,16 @@
 ﻿import { useCallback, useEffect, useMemo, useState } from "react";
-import { Bar, BarChart, CartesianGrid, ComposedChart, Legend, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ComposedChart,
+  Legend,
+  Line,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis
+} from "recharts";
 import { EmptyState } from "@/components/empty-state";
 import { PageHeader } from "@/components/page-header";
 import { PageShell } from "@/components/page-shell";
@@ -72,28 +83,46 @@ export function DashboardPage() {
     () =>
       ({
         pageTitle: isZh ? "\u770b\u677f" : "Dashboard",
-        pageDesc: isZh ? "\u6309\u65f6\u95f4\u8303\u56f4\u67e5\u770b\u6536\u5165\u3001\u652f\u51fa\u4e0e\u7c7b\u522b\u5206\u5e03\u3002" : "Monitor income, expense and category trends by time range.",
+        pageDesc: isZh
+          ? "\u6309\u65f6\u95f4\u8303\u56f4\u67e5\u770b\u6536\u5165\u3001\u652f\u51fa\u4e0e\u7c7b\u522b\u5206\u5e03\u3002"
+          : "Monitor income, expense and category trends by time range.",
         thisMonth: isZh ? "\u672c\u6708" : "This Month",
         last30Days: isZh ? "\u8fd130\u5929" : "Last 30 Days",
         custom: isZh ? "\u81ea\u5b9a\u4e49" : "Custom",
         apply: isZh ? "\u5e94\u7528" : "Apply",
         loading: isZh ? "\u52a0\u8f7d\u4e2d..." : "Loading...",
-        invalidRange: isZh ? "\u65f6\u95f4\u8303\u56f4\u683c\u5f0f\u65e0\u6548\u3002" : "Invalid date range.",
-        invalidRangeOrder: isZh ? "\u5f00\u59cb\u65f6\u95f4\u4e0d\u80fd\u665a\u4e8e\u7ed3\u675f\u65f6\u95f4\u3002" : "From must be earlier than To.",
-        statsLoadFailed: isZh ? "\u7edf\u8ba1\u52a0\u8f7d\u5931\u8d25" : "Failed to load statistics",
+        invalidRange: isZh
+          ? "\u65f6\u95f4\u8303\u56f4\u683c\u5f0f\u65e0\u6548\u3002"
+          : "Invalid date range.",
+        invalidRangeOrder: isZh
+          ? "\u5f00\u59cb\u65f6\u95f4\u4e0d\u80fd\u665a\u4e8e\u7ed3\u675f\u65f6\u95f4\u3002"
+          : "From must be earlier than To.",
+        statsLoadFailed: isZh
+          ? "\u7edf\u8ba1\u52a0\u8f7d\u5931\u8d25"
+          : "Failed to load statistics",
         statsRefreshed: isZh ? "\u7edf\u8ba1\u5df2\u66f4\u65b0" : "Statistics refreshed",
         dailyTitle: isZh ? "\u6bcf\u65e5\u8d8b\u52bf" : "Daily Trend",
-        dailyDesc: isZh ? "\u6536\u5165/\u652f\u51fa\u67f1\u72b6 + \u51c0\u503c\u7ebf\uff08\u5355\u4f4d\uff1a\u5143\uff09\u3002" : "Income/Expense bars with Net line.",
-        noDailyTitle: isZh ? "\u5f53\u524d\u8303\u56f4\u6682\u65e0\u8d8b\u52bf\u6570\u636e" : "No daily trend in this range",
-        noDailyDesc: isZh ? "\u8bf7\u5728\u65b0\u589e\u9875\u5f55\u5165\u4ea4\u6613\u6216\u8c03\u6574\u65f6\u95f4\u8303\u56f4\u3002" : "Insert transactions on Add page or adjust range.",
+        dailyDesc: isZh
+          ? "\u6536\u5165/\u652f\u51fa\u67f1\u72b6 + \u51c0\u503c\u7ebf\uff08\u5355\u4f4d\uff1a\u5143\uff09\u3002"
+          : "Income/Expense bars with Net line.",
+        noDailyTitle: isZh
+          ? "\u5f53\u524d\u8303\u56f4\u6682\u65e0\u8d8b\u52bf\u6570\u636e"
+          : "No daily trend in this range",
+        noDailyDesc: isZh
+          ? "\u8bf7\u5728\u65b0\u589e\u9875\u5f55\u5165\u4ea4\u6613\u6216\u8c03\u6574\u65f6\u95f4\u8303\u56f4\u3002"
+          : "Insert transactions on Add page or adjust range.",
         refreshDashboard: isZh ? "\u5237\u65b0\u770b\u677f" : "Refresh Dashboard",
         income: isZh ? "\u6536\u5165" : "Income",
         expense: isZh ? "\u652f\u51fa" : "Expense",
         net: isZh ? "\u51c0\u503c" : "Net",
         categoryTitle: isZh ? "\u652f\u51fa\u7c7b\u522b Top 10" : "Expense Categories Top 10",
-        categoryDesc: isZh ? "\u6309\u7c7b\u522b\u6c47\u603b\u652f\u51fa\u91d1\u989d\u3002" : "Top categories by expense amount.",
+        categoryDesc: isZh
+          ? "\u6309\u7c7b\u522b\u6c47\u603b\u652f\u51fa\u91d1\u989d\u3002"
+          : "Top categories by expense amount.",
         noCategoryTitle: isZh ? "\u6682\u65e0\u7c7b\u522b\u7edf\u8ba1" : "No category statistics",
-        noCategoryDesc: isZh ? "\u5f53\u524d\u8303\u56f4\u6ca1\u6709\u652f\u51fa\u8bb0\u5f55\u3002" : "No expense records in this range.",
+        noCategoryDesc: isZh
+          ? "\u5f53\u524d\u8303\u56f4\u6ca1\u6709\u652f\u51fa\u8bb0\u5f55\u3002"
+          : "No expense records in this range.",
         adjustRange: isZh ? "\u8c03\u6574\u8303\u56f4" : "Adjust Range",
         amount: isZh ? "\u91d1\u989d" : "Amount",
         category: isZh ? "\u7c7b\u522b" : "Category"
@@ -130,11 +159,19 @@ export function DashboardPage() {
       const fromIso = datetimeLocalToIso(fromInput);
       const toIso = datetimeLocalToIso(toInput);
       if (!fromIso || !toIso) {
-        pushToast({ title: text.statsLoadFailed, description: text.invalidRange, variant: "error" });
+        pushToast({
+          title: text.statsLoadFailed,
+          description: text.invalidRange,
+          variant: "error"
+        });
         return;
       }
       if (new Date(fromIso).getTime() > new Date(toIso).getTime()) {
-        pushToast({ title: text.statsLoadFailed, description: text.invalidRangeOrder, variant: "error" });
+        pushToast({
+          title: text.statsLoadFailed,
+          description: text.invalidRangeOrder,
+          variant: "error"
+        });
         return;
       }
 
@@ -144,7 +181,9 @@ export function DashboardPage() {
         const [summaryData, dailyData, categoryData] = await Promise.all([
           tauriInvoke<StatsSummary>("stats_summary", { filters }),
           tauriInvoke<DailyPoint[]>("stats_daily", { filters }),
-          tauriInvoke<CategoryPoint[]>("stats_by_category", { filters: { ...filters, type: "expense", top_n: 10 } })
+          tauriInvoke<CategoryPoint[]>("stats_by_category", {
+            filters: { ...filters, type: "expense", top_n: 10 }
+          })
         ]);
 
         setSummary(summaryData);
@@ -160,7 +199,15 @@ export function DashboardPage() {
         setIsLoading(false);
       }
     },
-    [fromInput, pushToast, text.invalidRange, text.invalidRangeOrder, text.statsLoadFailed, text.statsRefreshed, toInput]
+    [
+      fromInput,
+      pushToast,
+      text.invalidRange,
+      text.invalidRangeOrder,
+      text.statsLoadFailed,
+      text.statsRefreshed,
+      toInput
+    ]
   );
 
   useEffect(() => {
@@ -226,7 +273,10 @@ export function DashboardPage() {
         description={text.pageDesc}
         actions={
           <div className="grid w-full gap-2 md:w-auto md:grid-cols-[120px_180px_180px_auto]">
-            <Select value={preset} onChange={(event) => setPreset(event.target.value as RangePreset)}>
+            <Select
+              value={preset}
+              onChange={(event) => setPreset(event.target.value as RangePreset)}
+            >
               <option value="month">{text.thisMonth}</option>
               <option value="last30">{text.last30Days}</option>
               <option value="custom">{text.custom}</option>
@@ -267,7 +317,11 @@ export function DashboardPage() {
               <Skeleton className="h-[280px] w-full" />
             </div>
           ) : dailyChartData.length === 0 ? (
-            <EmptyState title={text.noDailyTitle} description={text.noDailyDesc} ctaLabel={text.refreshDashboard} />
+            <EmptyState
+              title={text.noDailyTitle}
+              description={text.noDailyDesc}
+              ctaLabel={text.refreshDashboard}
+            />
           ) : (
             <div className="h-[320px] w-full rounded-xl border bg-muted/20 p-4">
               <ResponsiveContainer width="100%" height="100%">
@@ -297,7 +351,14 @@ export function DashboardPage() {
                   />
                   <Bar dataKey="income" name="income" fill={incomeColor} radius={[8, 8, 0, 0]} />
                   <Bar dataKey="expense" name="expense" fill={expenseColor} radius={[8, 8, 0, 0]} />
-                  <Line type="monotone" dataKey="net" name="net" stroke={netColor} strokeWidth={2} dot={false} />
+                  <Line
+                    type="monotone"
+                    dataKey="net"
+                    name="net"
+                    stroke={netColor}
+                    strokeWidth={2}
+                    dot={false}
+                  />
                 </ComposedChart>
               </ResponsiveContainer>
             </div>
@@ -314,16 +375,27 @@ export function DashboardPage() {
           {isLoading ? (
             <Skeleton className="h-[280px] w-full" />
           ) : categoryChartData.length === 0 ? (
-            <EmptyState title={text.noCategoryTitle} description={text.noCategoryDesc} ctaLabel={text.adjustRange} />
+            <EmptyState
+              title={text.noCategoryTitle}
+              description={text.noCategoryDesc}
+              ctaLabel={text.adjustRange}
+            />
           ) : (
             <div className="h-[320px] w-full rounded-xl border bg-muted/20 p-4">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={categoryChartData} layout="vertical" margin={{ left: 8, right: 8, top: 8, bottom: 8 }}>
+                <BarChart
+                  data={categoryChartData}
+                  layout="vertical"
+                  margin={{ left: 8, right: 8, top: 8, bottom: 8 }}
+                >
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis type="number" />
                   <YAxis type="category" dataKey="category" width={120} />
                   <Tooltip
-                    formatter={(value: number) => [formatCurrency(Math.round(value * 100)), text.amount]}
+                    formatter={(value: number) => [
+                      formatCurrency(Math.round(value * 100)),
+                      text.amount
+                    ]}
                     labelFormatter={(label: string) => `${text.category}: ${label}`}
                   />
                   <Bar dataKey="total" fill={expenseColor} radius={[0, 8, 8, 0]} />

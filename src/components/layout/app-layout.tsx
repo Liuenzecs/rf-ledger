@@ -22,14 +22,22 @@ export function AppLayout() {
           <div className="space-y-1">
             <p className="text-2xl font-semibold">RF Ledger</p>
             <p className="text-sm text-muted-foreground">
-              {isZh ? "\u672c\u5730\u79bb\u7ebf\u8bb0\u8d26\u684c\u9762\u5e94\u7528" : "Local desktop bookkeeping"}
+              {isZh
+                ? "\u672c\u5730\u79bb\u7ebf\u8bb0\u8d26\u684c\u9762\u5e94\u7528"
+                : "Local desktop bookkeeping"}
             </p>
           </div>
           <nav className="flex items-center gap-2">
             {navItems.map((item) => {
               const isActive = location.pathname === item.path;
               return (
-                <Button key={item.path} asChild size="sm" variant={isActive ? "default" : "ghost"} className={cn("px-4")}>
+                <Button
+                  key={item.path}
+                  asChild
+                  size="sm"
+                  variant={isActive ? "default" : "ghost"}
+                  className={cn("px-4")}
+                >
                   <NavLink to={item.path}>{item.label}</NavLink>
                 </Button>
               );

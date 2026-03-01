@@ -4,12 +4,16 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --host 0.0.0.0 --port 5173 --strictPort",
+    "dev": "vite --port 5173 --strictPort",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "tauri": "set \"PATH=%USERPROFILE%\\.cargo\\bin;%PATH%\" && tauri",
     "tauri:dev": "npm run tauri -- dev",
-    "tauri:build": "npm run tauri -- build"
+    "tauri:build": "npm run tauri -- build",
+    "format": "prettier --write . && npm run format:rust",
+    "format:check": "prettier --check . && npm run format:rust:check",
+    "format:rust": "cargo fmt --manifest-path src-tauri/Cargo.toml",
+    "format:rust:check": "cargo fmt --check --manifest-path src-tauri/Cargo.toml"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",
@@ -30,6 +34,7 @@
     "@vitejs/plugin-react": "^4.7.0",
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.6",
+    "prettier": "^3.6.2",
     "tailwindcss": "^3.4.18",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "^5.9.2",

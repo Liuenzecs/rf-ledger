@@ -77,11 +77,17 @@ export function SettingsPage() {
     () =>
       ({
         title: isZh ? "\u8bbe\u7f6e" : "Settings",
-        description: isZh ? "\u5e94\u7528\u504f\u597d\u3001\u6570\u636e\u5b58\u50a8\u4e0e\u5bfc\u51fa\u7ba1\u7406\u3002" : "Preferences, local storage and export management.",
+        description: isZh
+          ? "\u5e94\u7528\u504f\u597d\u3001\u6570\u636e\u5b58\u50a8\u4e0e\u5bfc\u51fa\u7ba1\u7406\u3002"
+          : "Preferences, local storage and export management.",
         languageTitle: isZh ? "\u8bed\u8a00" : "Language",
-        languageDesc: isZh ? "\u9ed8\u8ba4\u4e3a\u4e2d\u6587\uff0c\u5207\u6362\u540e\u7acb\u5373\u751f\u6548\u3002" : "Default language is Chinese. Changes apply immediately.",
+        languageDesc: isZh
+          ? "\u9ed8\u8ba4\u4e3a\u4e2d\u6587\uff0c\u5207\u6362\u540e\u7acb\u5373\u751f\u6548\u3002"
+          : "Default language is Chinese. Changes apply immediately.",
         storageTitle: isZh ? "\u5b58\u50a8\u4fe1\u606f" : "Storage Info",
-        storageDesc: isZh ? "\u4ee5\u4e0b\u8def\u5f84\u4ec5\u8bfb\u663e\u793a\uff0c\u6570\u636e\u4fdd\u5b58\u5728\u672c\u673a App Data\u3002" : "Read-only paths in local app data directory.",
+        storageDesc: isZh
+          ? "\u4ee5\u4e0b\u8def\u5f84\u4ec5\u8bfb\u663e\u793a\uff0c\u6570\u636e\u4fdd\u5b58\u5728\u672c\u673a App Data\u3002"
+          : "Read-only paths in local app data directory.",
         dbPath: isZh ? "\u6570\u636e\u5e93\u8def\u5f84" : "Database Path",
         backupDir: isZh ? "\u5907\u4efd\u76ee\u5f55" : "Backup Directory",
         exportDir: isZh ? "\u5bfc\u51fa\u76ee\u5f55" : "Export Directory",
@@ -107,7 +113,9 @@ export function SettingsPage() {
         dialogFallback: isZh
           ? "\u5f53\u524d\u73af\u5883\u672a\u542f\u7528\u6587\u4ef6\u5bf9\u8bdd\u6846\uff0c\u5df2\u56de\u9000\u5230\u9ed8\u8ba4\u5bfc\u51fa\u8def\u5f84\u3002"
           : "File dialog unavailable. Falling back to default export path.",
-        invalidRange: isZh ? "\u5bfc\u51fa\u65f6\u95f4\u8303\u56f4\u65e0\u6548\u3002" : "Invalid export date range.",
+        invalidRange: isZh
+          ? "\u5bfc\u51fa\u65f6\u95f4\u8303\u56f4\u65e0\u6548\u3002"
+          : "Invalid export date range.",
         exportBtn: isZh ? "\u5bfc\u51fa CSV" : "Export CSV",
         exporting: isZh ? "\u5bfc\u51fa\u4e2d..." : "Exporting...",
         exportOk: isZh ? "\u5bfc\u51fa\u6210\u529f" : "Export completed",
@@ -243,7 +251,11 @@ export function SettingsPage() {
           <CardDescription>{text.languageDesc}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3 p-6 pt-0">
-          <Select value={language} onChange={(event) => setLanguage(event.target.value as AppLanguage)} className="max-w-xs">
+          <Select
+            value={language}
+            onChange={(event) => setLanguage(event.target.value as AppLanguage)}
+            className="max-w-xs"
+          >
             <option value="zh">\u4e2d\u6587</option>
             <option value="en">English</option>
           </Select>
@@ -301,7 +313,10 @@ export function SettingsPage() {
           </div>
 
           <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-5">
-            <Select value={rangePreset} onChange={(event) => setRangePreset(event.target.value as ExportRangePreset)}>
+            <Select
+              value={rangePreset}
+              onChange={(event) => setRangePreset(event.target.value as ExportRangePreset)}
+            >
               <option value="month">{text.thisMonth}</option>
               <option value="last30">{text.last30}</option>
               <option value="custom">{text.custom}</option>

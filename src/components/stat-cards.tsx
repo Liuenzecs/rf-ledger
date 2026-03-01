@@ -116,7 +116,9 @@ export function StatCards({ summary, formatAmount }: StatCardsProps) {
       {items.map((item) => (
         <Card key={item.label}>
           <CardHeader className="p-6 pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">{item.label}</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              {item.label}
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 p-6 pt-0">
             <p className={`text-2xl font-semibold ${item.tone}`}>{item.value}</p>

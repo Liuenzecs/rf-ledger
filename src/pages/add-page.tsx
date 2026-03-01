@@ -71,7 +71,9 @@ export function AddPage() {
     () =>
       ({
         title: isZh ? "\u65b0\u589e" : "Add",
-        description: isZh ? "\u5feb\u901f\u5f55\u5165\u4ea4\u6613\u8bb0\u5f55\uff0c\u9ed8\u8ba4\u4fdd\u6301\u6781\u7b80\u4f53\u9a8c\u3002" : "Capture transactions quickly with a focused form.",
+        description: isZh
+          ? "\u5feb\u901f\u5f55\u5165\u4ea4\u6613\u8bb0\u5f55\uff0c\u9ed8\u8ba4\u4fdd\u6301\u6781\u7b80\u4f53\u9a8c\u3002"
+          : "Capture transactions quickly with a focused form.",
         formTitle: isZh ? "\u4ea4\u6613\u5f55\u5165" : "Transaction Form",
         formDescription: isZh
           ? "\u6309 Enter \u6216\u70b9\u51fb\u63d0\u4ea4\u5373\u53ef\u5199\u5165\u672c\u5730 SQLite\u3002"
@@ -79,7 +81,9 @@ export function AddPage() {
         occurredDate: isZh ? "\u4ea4\u6613\u65e5\u671f" : "Date",
         useSpecificTime: isZh ? "\u65f6\u95f4\u7cbe\u5ea6" : "Time Precision",
         dateOnly: isZh ? "\u4ec5\u65e5\u671f\uff08\u9ed8\u8ba4\uff09" : "Date only (Default)",
-        dateWithTime: isZh ? "\u65e5\u671f + \u65f6\u95f4\uff08\u53ef\u9009\uff09" : "Date + time (Optional)",
+        dateWithTime: isZh
+          ? "\u65e5\u671f + \u65f6\u95f4\uff08\u53ef\u9009\uff09"
+          : "Date + time (Optional)",
         optionalTime: isZh ? "\u53ef\u9009\u65f6\u95f4" : "Optional Time",
         type: isZh ? "\u7c7b\u578b" : "Type",
         income: isZh ? "\u6536\u5165" : "Income",
@@ -90,12 +94,20 @@ export function AddPage() {
         note: isZh ? "\u5907\u6ce8" : "Note",
         submit: isZh ? "\u63d0\u4ea4" : "Submit",
         submitting: isZh ? "\u63d0\u4ea4\u4e2d..." : "Submitting...",
-        invalidDate: isZh ? "\u53d1\u751f\u65f6\u95f4\u683c\u5f0f\u65e0\u6548\u3002" : "Invalid occurred_at datetime.",
-        invalidAmount: isZh ? "\u8bf7\u8f93\u5165\u975e 0 \u7684\u91d1\u989d\u3002" : "Amount must be non-zero.",
-        requiredFields: isZh ? "\u5206\u7c7b\u548c\u8d26\u6237\u4e0d\u80fd\u4e3a\u7a7a\u3002" : "Category and account are required.",
+        invalidDate: isZh
+          ? "\u53d1\u751f\u65f6\u95f4\u683c\u5f0f\u65e0\u6548\u3002"
+          : "Invalid occurred_at datetime.",
+        invalidAmount: isZh
+          ? "\u8bf7\u8f93\u5165\u975e 0 \u7684\u91d1\u989d\u3002"
+          : "Amount must be non-zero.",
+        requiredFields: isZh
+          ? "\u5206\u7c7b\u548c\u8d26\u6237\u4e0d\u80fd\u4e3a\u7a7a\u3002"
+          : "Category and account are required.",
         addSuccess: isZh ? "\u63d2\u5165\u6210\u529f" : "Inserted",
         addSuccessDesc: (id: number) =>
-          isZh ? `\u4ea4\u6613 #${id} \u5df2\u5199\u5165\u6570\u636e\u5e93\u3002` : `Transaction #${id} has been saved.`,
+          isZh
+            ? `\u4ea4\u6613 #${id} \u5df2\u5199\u5165\u6570\u636e\u5e93\u3002`
+            : `Transaction #${id} has been saved.`,
         addFail: isZh ? "\u63d2\u5165\u5931\u8d25" : "Insert failed",
         helperTitle: isZh ? "\u5feb\u6377\u5f55\u5165\u63d0\u793a" : "Quick Entry Tips",
         helperDescription: isZh
@@ -125,7 +137,10 @@ export function AddPage() {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const occurredAtIso = dateAndTimeToIso(form.occurredOnDate, form.hasSpecificTime ? form.occurredAtTime : undefined);
+    const occurredAtIso = dateAndTimeToIso(
+      form.occurredOnDate,
+      form.hasSpecificTime ? form.occurredAtTime : undefined
+    );
     if (!occurredAtIso) {
       pushToast({ title: text.addFail, description: text.invalidDate, variant: "error" });
       return;
@@ -207,7 +222,9 @@ export function AddPage() {
                 <Input
                   type="date"
                   value={form.occurredOnDate}
-                  onChange={(event) => setForm((prev) => ({ ...prev, occurredOnDate: event.target.value }))}
+                  onChange={(event) =>
+                    setForm((prev) => ({ ...prev, occurredOnDate: event.target.value }))
+                  }
                   required
                 />
               </div>
@@ -233,7 +250,9 @@ export function AddPage() {
                 <Input
                   type="time"
                   value={form.occurredAtTime}
-                  onChange={(event) => setForm((prev) => ({ ...prev, occurredAtTime: event.target.value }))}
+                  onChange={(event) =>
+                    setForm((prev) => ({ ...prev, occurredAtTime: event.target.value }))
+                  }
                   disabled={!form.hasSpecificTime}
                 />
               </div>
@@ -242,7 +261,9 @@ export function AddPage() {
                 <p className="text-sm text-muted-foreground">{text.type}</p>
                 <Select
                   value={form.type}
-                  onChange={(event) => setForm((prev) => ({ ...prev, type: event.target.value as TransactionType }))}
+                  onChange={(event) =>
+                    setForm((prev) => ({ ...prev, type: event.target.value as TransactionType }))
+                  }
                 >
                   <option value="income">{text.income}</option>
                   <option value="expense">{text.expense}</option>
@@ -255,7 +276,9 @@ export function AddPage() {
                   type="number"
                   step="0.01"
                   value={form.amountYuan}
-                  onChange={(event) => setForm((prev) => ({ ...prev, amountYuan: event.target.value }))}
+                  onChange={(event) =>
+                    setForm((prev) => ({ ...prev, amountYuan: event.target.value }))
+                  }
                   placeholder="0.00"
                   required
                 />
@@ -265,7 +288,9 @@ export function AddPage() {
                 <p className="text-sm text-muted-foreground">{text.category}</p>
                 <Input
                   value={form.category}
-                  onChange={(event) => setForm((prev) => ({ ...prev, category: event.target.value }))}
+                  onChange={(event) =>
+                    setForm((prev) => ({ ...prev, category: event.target.value }))
+                  }
                   required
                 />
               </div>
@@ -274,14 +299,19 @@ export function AddPage() {
                 <p className="text-sm text-muted-foreground">{text.account}</p>
                 <Input
                   value={form.account}
-                  onChange={(event) => setForm((prev) => ({ ...prev, account: event.target.value }))}
+                  onChange={(event) =>
+                    setForm((prev) => ({ ...prev, account: event.target.value }))
+                  }
                   required
                 />
               </div>
 
               <div className="space-y-2 md:col-span-2 lg:col-span-1">
                 <p className="text-sm text-muted-foreground">{text.note}</p>
-                <Input value={form.note} onChange={(event) => setForm((prev) => ({ ...prev, note: event.target.value }))} />
+                <Input
+                  value={form.note}
+                  onChange={(event) => setForm((prev) => ({ ...prev, note: event.target.value }))}
+                />
               </div>
             </div>
 
@@ -298,7 +328,11 @@ export function AddPage() {
           <CardDescription>{text.helperDescription}</CardDescription>
         </CardHeader>
         <CardContent className="p-6 pt-0">
-          <EmptyState title={text.helperEmptyTitle} description={text.helperEmptyDesc} ctaLabel={text.helperCta} />
+          <EmptyState
+            title={text.helperEmptyTitle}
+            description={text.helperEmptyDesc}
+            ctaLabel={text.helperCta}
+          />
         </CardContent>
       </Card>
     </PageShell>

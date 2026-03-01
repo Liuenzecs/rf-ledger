@@ -2,5 +2,6 @@ node_modules/
 dist/
 *.sqlite
 backups/
+exports/
 src-tauri/target/
 target/
