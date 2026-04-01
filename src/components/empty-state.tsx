@@ -1,12 +1,22 @@
-import { Button } from "@/components/ui/button";
+import { Button, type ButtonProps } from "@/components/ui/button";
 
 type EmptyStateProps = {
   title: string;
   description: string;
-  ctaLabel: string;
+  ctaLabel?: string;
+  onCtaClick?: () => void;
+  ctaDisabled?: boolean;
+  ctaVariant?: ButtonProps["variant"];
 };
 
-export function EmptyState({ title, description, ctaLabel }: EmptyStateProps) {
+export function EmptyState({
+  title,
+  description,
+  ctaLabel,
+  onCtaClick,
+  ctaDisabled,
+  ctaVariant = "secondary"
+}: EmptyStateProps) {
   return (
     <div className="flex flex-col items-start gap-3 rounded-xl bg-muted/30 p-6">
       <div className="flex h-10 w-10 items-center justify-center rounded-xl border bg-background shadow-sm">
@@ -21,9 +31,11 @@ export function EmptyState({ title, description, ctaLabel }: EmptyStateProps) {
         <h3 className="text-lg font-medium">{title}</h3>
         <p className="text-sm text-muted-foreground">{description}</p>
       </div>
-      <Button disabled variant="secondary">
-        {ctaLabel}
-      </Button>
+      {ctaLabel ? (
+        <Button disabled={ctaDisabled ?? !onCtaClick} onClick={onCtaClick} variant={ctaVariant}>
+          {ctaLabel}
+        </Button>
+      ) : null}
     </div>
   );
 }

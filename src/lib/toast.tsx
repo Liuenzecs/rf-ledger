@@ -1,4 +1,4 @@
-﻿import {
+import {
   createContext,
   type ReactNode,
   useCallback,
@@ -8,6 +8,7 @@
   useState
 } from "react";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/lib/language";
 
 type ToastVariant = "success" | "error" | "info";
 
@@ -16,6 +17,9 @@ type ToastItem = {
   title: string;
   description?: string;
   variant: ToastVariant;
+  copyText?: string;
+  actionLabel?: string;
+  onAction?: () => void;
 };
 
 type ToastInput = {
@@ -23,6 +27,9 @@ type ToastInput = {
   description?: string;
   variant?: ToastVariant;
   durationMs?: number;
+  copyText?: string;
+  actionLabel?: string;
+  onAction?: () => void;
 };
 
 type ToastContextValue = {
@@ -42,6 +49,8 @@ function toastTone(variant: ToastVariant): string {
 }
 
 export function ToastProvider({ children }: { children: ReactNode }) {
+  const { language } = useLanguage();
+  const isZh = language === "zh";
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const idRef = useRef(1);
 
@@ -50,11 +59,22 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const pushToast = useCallback(
-    ({ title, description, variant = "info", durationMs = 3200 }: ToastInput) => {
+    ({
+      title,
+      description,
+      variant = "info",
+      durationMs = 3200,
+      copyText,
+      actionLabel,
+      onAction
+    }: ToastInput) => {
       const id = idRef.current;
       idRef.current += 1;
 
-      setToasts((prev) => [...prev, { id, title, description, variant }]);
+      setToasts((prev) => [
+        ...prev,
+        { id, title, description, variant, copyText, actionLabel, onAction }
+      ]);
       window.setTimeout(() => {
         dismissToast(id);
       }, durationMs);
@@ -63,6 +83,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   );
 
   const value = useMemo(() => ({ pushToast }), [pushToast]);
+  const copyLabel = isZh ? "\u590d\u5236" : "Copy";
+  const closeLabel = isZh ? "\u5173\u95ed" : "Close";
 
   return (
     <ToastContext.Provider value={value}>
@@ -71,22 +93,51 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         {toasts.map((toast) => (
           <div
             key={toast.id}
-            className={`pointer-events-auto rounded-xl border p-4 shadow-sm ${toastTone(toast.variant)}`}
+            className={`pointer-events-auto rounded-xl border px-4 py-3 shadow-sm ${toastTone(toast.variant)}`}
           >
             <div className="flex items-start justify-between gap-3">
-              <div className="space-y-1">
+              <div className="min-w-0 space-y-1">
                 <p className="text-sm font-medium">{toast.title}</p>
                 {toast.description ? (
-                  <p className="text-xs text-current/90">{toast.description}</p>
+                  <p className="break-all text-xs text-current/90">{toast.description}</p>
+                ) : null}
+                {toast.copyText || (toast.actionLabel && toast.onAction) ? (
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    {toast.copyText ? (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 px-2 text-[11px]"
+                        onClick={() => {
+                          if (typeof navigator !== "undefined" && navigator.clipboard) {
+                            void navigator.clipboard.writeText(toast.copyText ?? "");
+                          }
+                        }}
+                      >
+                        {copyLabel}
+                      </Button>
+                    ) : null}
+                    {toast.actionLabel && toast.onAction ? (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 px-2 text-[11px]"
+                        onClick={() => toast.onAction?.()}
+                      >
+                        {toast.actionLabel}
+                      </Button>
+                    ) : null}
+                  </div>
                 ) : null}
               </div>
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-7 px-2"
+                className="h-7 px-2 text-base leading-none"
+                aria-label={closeLabel}
                 onClick={() => dismissToast(toast.id)}
               >
-                x
+                ×
               </Button>
             </div>
           </div>

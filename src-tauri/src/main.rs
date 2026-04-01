@@ -4,8 +4,9 @@ mod db;
 mod models;
 
 use models::{
-    BackupResult, CategoryPoint, DailyPoint, ExportFilters, ExportResult, ListFilters,
-    NewTransaction, StatsFilters, StatsSummary, StorageInfo, Transaction, UpdateTransactionPatch,
+    AccountPoint, BackupEntry, BackupResult, CategoryPoint, CountResult, DailyPoint, DailySummary,
+    ExportFilters, ExportResult, FormSuggestions, ListFilters, NewTransaction, RestoreResult,
+    StatsComparison, StatsFilters, StatsSummary, StorageInfo, Transaction, UpdateTransactionPatch,
 };
 use std::path::PathBuf;
 use tauri::{Manager, State};
@@ -29,6 +30,27 @@ fn list_transactions(
     filters: Option<ListFilters>,
 ) -> Result<Vec<Transaction>, String> {
     db::list_transactions(&state.db_path, filters.unwrap_or_default())
+}
+
+#[tauri::command]
+fn count_transactions(
+    state: State<'_, AppState>,
+    filters: Option<ListFilters>,
+) -> Result<CountResult, String> {
+    db::count_transactions(&state.db_path, filters.unwrap_or_default())
+}
+
+#[tauri::command]
+fn get_form_suggestions(state: State<'_, AppState>) -> Result<FormSuggestions, String> {
+    db::get_form_suggestions(&state.db_path)
+}
+
+#[tauri::command]
+fn list_daily_summaries(
+    state: State<'_, AppState>,
+    filters: Option<ListFilters>,
+) -> Result<Vec<DailySummary>, String> {
+    db::list_daily_summaries(&state.db_path, filters.unwrap_or_default())
 }
 
 #[tauri::command]
@@ -70,6 +92,22 @@ fn stats_by_category(
 }
 
 #[tauri::command]
+fn stats_by_account(
+    state: State<'_, AppState>,
+    filters: Option<StatsFilters>,
+) -> Result<Vec<AccountPoint>, String> {
+    db::stats_by_account(&state.db_path, filters.unwrap_or_default())
+}
+
+#[tauri::command]
+fn stats_comparison(
+    state: State<'_, AppState>,
+    filters: Option<StatsFilters>,
+) -> Result<StatsComparison, String> {
+    db::stats_comparison(&state.db_path, filters.unwrap_or_default())
+}
+
+#[tauri::command]
 fn backup_db(state: State<'_, AppState>) -> Result<BackupResult, String> {
     db::backup_db(&state.db_path, &state.app_data_dir)
 }
@@ -86,6 +124,32 @@ fn export_csv(
 #[tauri::command]
 fn get_storage_info(state: State<'_, AppState>) -> Result<StorageInfo, String> {
     db::storage_info(&state.db_path, &state.app_data_dir)
+}
+
+#[tauri::command]
+fn list_backups(state: State<'_, AppState>) -> Result<Vec<BackupEntry>, String> {
+    db::list_backups(&state.app_data_dir)
+}
+
+#[tauri::command]
+fn restore_backup(state: State<'_, AppState>, file_name: String) -> Result<RestoreResult, String> {
+    db::restore_backup(&state.db_path, &state.app_data_dir, &file_name)
+}
+
+#[tauri::command]
+fn open_backup_dir(state: State<'_, AppState>) -> Result<bool, String> {
+    db::open_backup_dir(&state.app_data_dir)
+}
+
+#[tauri::command]
+fn open_export_dir(state: State<'_, AppState>) -> Result<bool, String> {
+    db::open_export_dir(&state.app_data_dir)
+}
+
+#[tauri::command]
+fn restart_app(app: tauri::AppHandle) -> Result<bool, String> {
+    app.request_restart();
+    Ok(true)
 }
 
 fn main() {
@@ -117,14 +181,24 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             add_transaction,
             list_transactions,
+            count_transactions,
+            get_form_suggestions,
+            list_daily_summaries,
             update_transaction,
             delete_transaction,
             stats_summary,
             stats_daily,
             stats_by_category,
+            stats_by_account,
+            stats_comparison,
             backup_db,
             export_csv,
-            get_storage_info
+            get_storage_info,
+            list_backups,
+            restore_backup,
+            open_backup_dir,
+            open_export_dir,
+            restart_app
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

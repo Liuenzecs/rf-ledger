@@ -1,29 +1,18 @@
-﻿import { type FormEvent, useMemo, useState } from "react";
+import { type FormEvent, useMemo, useRef, useState } from "react";
 import { EmptyState } from "@/components/empty-state";
 import { PageHeader } from "@/components/page-header";
 import { PageShell } from "@/components/page-shell";
 import { StatCards } from "@/components/stat-cards";
+import { SuggestionInput } from "@/components/suggestion-input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
+import { useFormSuggestions } from "@/lib/form-suggestions";
+import { type Transaction, type TransactionType } from "@/lib/ledger-types";
 import { useLanguage } from "@/lib/language";
 import { tauriInvoke } from "@/lib/tauri";
 import { useToast } from "@/lib/toast";
-
-type TransactionType = "income" | "expense";
-
-type Transaction = {
-  id: number;
-  occurred_at: string;
-  amount_cents: number;
-  type: TransactionType;
-  category: string;
-  account: string;
-  note: string;
-  created_at: string;
-  updated_at: string;
-};
 
 type FormState = {
   occurredOnDate: string;
@@ -65,15 +54,17 @@ function dateAndTimeToIso(dateValue: string, timeValue?: string): string | null 
 export function AddPage() {
   const { language } = useLanguage();
   const { pushToast } = useToast();
+  const { suggestions, refreshSuggestions } = useFormSuggestions();
   const isZh = language === "zh";
+  const amountInputRef = useRef<HTMLInputElement | null>(null);
 
   const text = useMemo(
     () =>
       ({
         title: isZh ? "\u65b0\u589e" : "Add",
         description: isZh
-          ? "\u5feb\u901f\u5f55\u5165\u4ea4\u6613\u8bb0\u5f55\uff0c\u9ed8\u8ba4\u4fdd\u6301\u6781\u7b80\u4f53\u9a8c\u3002"
-          : "Capture transactions quickly with a focused form.",
+          ? "\u5feb\u901f\u5f55\u5165\u4ea4\u6613\u8bb0\u5f55\uff0c\u7c7b\u522b\u4e0e\u652f\u4ed8\u65b9\u5f0f\u4f1a\u4f18\u5148\u7ed9\u51fa\u5386\u53f2\u5efa\u8bae\u3002"
+          : "Capture transactions quickly with history suggestions for category and payment method.",
         formTitle: isZh ? "\u4ea4\u6613\u5f55\u5165" : "Transaction Form",
         formDescription: isZh
           ? "\u6309 Enter \u6216\u70b9\u51fb\u63d0\u4ea4\u5373\u53ef\u5199\u5165\u672c\u5730 SQLite\u3002"
@@ -89,8 +80,14 @@ export function AddPage() {
         income: isZh ? "\u6536\u5165" : "Income",
         expense: isZh ? "\u652f\u51fa" : "Expense",
         amountYuan: isZh ? "\u91d1\u989d\uff08\u5143\uff09" : "Amount",
-        category: isZh ? "\u5206\u7c7b" : "Category",
-        account: isZh ? "\u8d26\u6237" : "Account",
+        category: isZh ? "\u7c7b\u522b" : "Category",
+        categoryPlaceholder: isZh
+          ? "\u8f93\u5165\u6216\u9009\u62e9\u5df2\u7528\u7c7b\u522b"
+          : "Type or choose a previous category",
+        account: isZh ? "\u652f\u4ed8\u65b9\u5f0f" : "Payment Method",
+        accountPlaceholder: isZh
+          ? "\u8f93\u5165\u6216\u9009\u62e9\u5df2\u7528\u652f\u4ed8\u65b9\u5f0f"
+          : "Type or choose a previous payment method",
         note: isZh ? "\u5907\u6ce8" : "Note",
         submit: isZh ? "\u63d0\u4ea4" : "Submit",
         submitting: isZh ? "\u63d0\u4ea4\u4e2d..." : "Submitting...",
@@ -101,23 +98,24 @@ export function AddPage() {
           ? "\u8bf7\u8f93\u5165\u975e 0 \u7684\u91d1\u989d\u3002"
           : "Amount must be non-zero.",
         requiredFields: isZh
-          ? "\u5206\u7c7b\u548c\u8d26\u6237\u4e0d\u80fd\u4e3a\u7a7a\u3002"
-          : "Category and account are required.",
+          ? "\u7c7b\u522b\u548c\u652f\u4ed8\u65b9\u5f0f\u4e0d\u80fd\u4e3a\u7a7a\u3002"
+          : "Category and payment method are required.",
         addSuccess: isZh ? "\u63d2\u5165\u6210\u529f" : "Inserted",
         addSuccessDesc: (id: number) =>
           isZh
             ? `\u4ea4\u6613 #${id} \u5df2\u5199\u5165\u6570\u636e\u5e93\u3002`
             : `Transaction #${id} has been saved.`,
         addFail: isZh ? "\u63d2\u5165\u5931\u8d25" : "Insert failed",
-        helperTitle: isZh ? "\u5feb\u6377\u5f55\u5165\u63d0\u793a" : "Quick Entry Tips",
-        helperDescription: isZh
-          ? "\u5f53\u524d\u63d0\u4ea4\u540e\u4f1a\u6e05\u7a7a\u91d1\u989d\u4e0e\u5907\u6ce8\uff0c\u5206\u7c7b\u4e0e\u8d26\u6237\u4f1a\u4fdd\u7559\u3002"
-          : "After submit, amount and note are reset while category/account stay.",
-        helperEmptyTitle: isZh ? "\u63d0\u793a\u5df2\u5c31\u7eea" : "Tips Ready",
-        helperEmptyDesc: isZh
-          ? "\u4f60\u53ef\u4ee5\u5148\u56fa\u5b9a\u5e38\u7528\u5206\u7c7b\u4e0e\u8d26\u6237\uff0c\u518d\u8fde\u7eed\u5f55\u5165\u591a\u6761\u4ea4\u6613\u3002"
-          : "Keep category/account stable and enter records continuously.",
-        helperCta: isZh ? "\u5df2\u4e86\u89e3" : "Understood"
+        combosTitle: isZh ? "\u6700\u8fd1\u5e38\u7528\u7ec4\u5408" : "Recent Quick Combos",
+        combosDescription: isZh
+          ? "\u70b9\u51fb\u5373\u53ef\u56de\u586b\u7c7b\u578b\u3001\u7c7b\u522b\u4e0e\u652f\u4ed8\u65b9\u5f0f\uff0c\u91d1\u989d\u4e0e\u5907\u6ce8\u4f1a\u4fdd\u6301\u4e0d\u53d8\u3002"
+          : "Tap to refill type, category and payment method while keeping amount and note unchanged.",
+        combosEmptyTitle: isZh ? "\u6682\u65e0\u5feb\u6377\u7ec4\u5408" : "No quick combos yet",
+        combosEmptyDesc: isZh
+          ? "\u8fde\u7eed\u8bb0\u5f55\u51e0\u7b14\u4ea4\u6613\u540e\uff0c\u8fd9\u91cc\u4f1a\u81ea\u52a8\u51fa\u73b0\u5e38\u7528\u7ec4\u5408\u3002"
+          : "After a few transactions, your most recent combinations will show up here.",
+        comboUse: isZh ? "\u4f7f\u7528\u6b21\u6570" : "Used",
+        comboApply: isZh ? "\u4e00\u952e\u56de\u586b" : "Apply Combo"
       }) as const,
     [isZh]
   );
@@ -133,6 +131,20 @@ export function AddPage() {
     note: ""
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const applyQuickCombination = (combo: {
+    type: TransactionType;
+    category: string;
+    account: string;
+  }) => {
+    setForm((prev) => ({
+      ...prev,
+      type: combo.type,
+      category: combo.category,
+      account: combo.account
+    }));
+    window.requestAnimationFrame(() => amountInputRef.current?.focus());
+  };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -178,6 +190,7 @@ export function AddPage() {
         }
       });
 
+      await refreshSuggestions();
       pushToast({
         title: text.addSuccess,
         description: text.addSuccessDesc(inserted.id),
@@ -275,6 +288,7 @@ export function AddPage() {
                 <Input
                   type="number"
                   step="0.01"
+                  ref={amountInputRef}
                   value={form.amountYuan}
                   onChange={(event) =>
                     setForm((prev) => ({ ...prev, amountYuan: event.target.value }))
@@ -286,22 +300,26 @@ export function AddPage() {
 
               <div className="space-y-2">
                 <p className="text-sm text-muted-foreground">{text.category}</p>
-                <Input
+                <SuggestionInput
                   value={form.category}
                   onChange={(event) =>
                     setForm((prev) => ({ ...prev, category: event.target.value }))
                   }
+                  placeholder={text.categoryPlaceholder}
+                  suggestions={suggestions.categories}
                   required
                 />
               </div>
 
               <div className="space-y-2">
                 <p className="text-sm text-muted-foreground">{text.account}</p>
-                <Input
+                <SuggestionInput
                   value={form.account}
                   onChange={(event) =>
                     setForm((prev) => ({ ...prev, account: event.target.value }))
                   }
+                  placeholder={text.accountPlaceholder}
+                  suggestions={suggestions.accounts}
                   required
                 />
               </div>
@@ -324,15 +342,46 @@ export function AddPage() {
 
       <Card>
         <CardHeader className="p-6">
-          <CardTitle>{text.helperTitle}</CardTitle>
-          <CardDescription>{text.helperDescription}</CardDescription>
+          <CardTitle>{text.combosTitle}</CardTitle>
+          <CardDescription>{text.combosDescription}</CardDescription>
         </CardHeader>
         <CardContent className="p-6 pt-0">
-          <EmptyState
-            title={text.helperEmptyTitle}
-            description={text.helperEmptyDesc}
-            ctaLabel={text.helperCta}
-          />
+          {suggestions.combinations.length === 0 ? (
+            <EmptyState title={text.combosEmptyTitle} description={text.combosEmptyDesc} />
+          ) : (
+            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+              {suggestions.combinations.map((combo) => (
+                <button
+                  key={`${combo.type}-${combo.category}-${combo.account}`}
+                  type="button"
+                  className="flex flex-col items-start gap-3 rounded-xl border bg-muted/20 p-4 text-left shadow-sm transition-colors hover:bg-muted/35"
+                  onClick={() => applyQuickCombination(combo)}
+                >
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span
+                      className={`inline-flex rounded-full border px-2 py-0.5 text-xs font-medium ${
+                        combo.type === "income"
+                          ? "border-emerald-100 bg-emerald-50 text-emerald-700"
+                          : "border-rose-100 bg-rose-50 text-rose-700"
+                      }`}
+                    >
+                      {combo.type === "income" ? text.income : text.expense}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {text.comboUse} {combo.count}
+                    </span>
+                  </div>
+
+                  <div className="space-y-1">
+                    <p className="text-base font-medium">{combo.category}</p>
+                    <p className="text-sm text-muted-foreground">{combo.account}</p>
+                  </div>
+
+                  <span className="text-xs text-muted-foreground">{text.comboApply}</span>
+                </button>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
     </PageShell>

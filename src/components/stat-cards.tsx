@@ -15,8 +15,15 @@ type StatCardsProps = {
   formatAmount?: (valueCents: number) => string;
 };
 
+function buildAllTimeFilters(): { from: string; to: string } {
+  return {
+    from: "1970-01-01T00:00:00Z",
+    to: new Date().toISOString()
+  };
+}
+
 export function StatCards({ summary, formatAmount }: StatCardsProps) {
-  const { language } = useLanguage();
+  const { language, displayCurrency, locale } = useLanguage();
   const isZh = language === "zh";
   const [fallbackSummary, setFallbackSummary] = useState<StatCardsSummary | undefined>(undefined);
 
@@ -26,7 +33,7 @@ export function StatCards({ summary, formatAmount }: StatCardsProps) {
       total_expense_cents: number;
       net_cents: number;
       tx_count: number;
-    }>("stats_summary");
+    }>("stats_summary", { filters: buildAllTimeFilters() });
 
     setFallbackSummary({
       totalIncomeCents: result.total_income_cents,
@@ -86,8 +93,12 @@ export function StatCards({ summary, formatAmount }: StatCardsProps) {
     if (!effectiveSummary) {
       return "--";
     }
-    const symbol = isZh ? "\u00A5" : "$";
-    return `${symbol}${(valueCents / 100).toFixed(2)}`;
+    return new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency: displayCurrency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(valueCents / 100);
   };
 
   const items = [
