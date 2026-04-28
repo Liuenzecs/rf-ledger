@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { ComboboxInput } from "@/components/combobox-input";
 import { EmptyState } from "@/components/empty-state";
 import { PageHeader } from "@/components/page-header";
 import { PageShell } from "@/components/page-shell";
@@ -23,7 +24,9 @@ import type {
   RestoreResult,
   StorageInfo
 } from "@/lib/ledger-types";
-import { useLanguage, type AppLanguage, type DisplayCurrency } from "@/lib/language";
+import { useLanguage, usePreferences, type AppLanguage, type DisplayCurrency } from "@/lib/language";
+import type { FormDefaults, TransactionType } from "@/lib/ledger-types";
+import { useFormSuggestions } from "@/lib/form-suggestions";
 import { tauriInvoke, tauriSaveFile } from "@/lib/tauri";
 import { useToast } from "@/lib/toast";
 
@@ -89,6 +92,8 @@ function formatBytes(value: number, locale: string): string {
 
 export function SettingsPage() {
   const { language, setLanguage, displayCurrency, setDisplayCurrency, locale } = useLanguage();
+  const { formDefaults, setFormDefaults } = usePreferences();
+  const { suggestions } = useFormSuggestions();
   const { pushToast } = useToast();
   const isZh = language === "zh";
 
@@ -108,6 +113,21 @@ export function SettingsPage() {
         currencyDesc: isZh
           ? "\u4ec5\u5f71\u54cd\u91d1\u989d\u663e\u793a\uff0c\u4e0d\u4f1a\u6539\u53d8\u5e95\u5c42 amount_cents \u5b58\u50a8\u3002"
           : "Affects display only, not the stored amount_cents value.",
+        defaultsTitle: isZh ? "\u5f55\u5165\u9ed8\u8ba4\u503c" : "Form Defaults",
+        defaultsDesc: isZh
+          ? "\u8bbe\u7f6e\u4ea4\u6613\u5f55\u5165\u8868\u5355\u7684\u9ed8\u8ba4\u504f\u597d\u3002\u7559\u7a7a\u5219\u4f7f\u7528\u5386\u53f2\u6700\u5e38\u7528\u503c\u3002"
+          : "Set preferred defaults for the transaction form. Leave empty to use the most-used value from your history.",
+        defaultType: isZh ? "\u9ed8\u8ba4\u7c7b\u578b" : "Default Type",
+        defaultCategory: isZh ? "\u9ed8\u8ba4\u7c7b\u522b" : "Default Category",
+        defaultAccount: isZh ? "\u9ed8\u8ba4\u652f\u4ed8\u65b9\u5f0f" : "Default Payment Method",
+        smartDefault: isZh
+          ? "\u4f7f\u7528\u6700\u5e38\u7528\uff08\u667a\u80fd\uff09"
+          : "Use most-used (smart)",
+        clearDefault: isZh ? "\u6e05\u9664\u9ed8\u8ba4\u503c" : "Clear default",
+        noDefaultsMatches: isZh
+          ? "\u65e0\u5339\u914d\uff0c\u76f4\u63a5\u8f93\u5165\u5373\u53ef"
+          : "No matches \u2014 type your own",
+        defaultsCountUses: isZh ? " \u6b21" : "",
         storageTitle: isZh ? "\u5b58\u50a8\u4fe1\u606f" : "Storage Info",
         storageDesc: isZh
           ? "\u4ee5\u4e0b\u8def\u5f84\u4ec5\u8bfb\u663e\u793a\uff0c\u6570\u636e\u4fdd\u5b58\u5728\u672c\u673a App Data\u3002"
@@ -401,6 +421,65 @@ export function SettingsPage() {
               <option value="USD">USD</option>
             </Select>
             <p className="text-xs text-muted-foreground">{text.currencyDesc}</p>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="p-6">
+          <CardTitle>{text.defaultsTitle}</CardTitle>
+          <CardDescription>{text.defaultsDesc}</CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-4 p-6 pt-0 md:grid-cols-3">
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">{text.defaultType}</p>
+            <Select
+              value={formDefaults.defaultType}
+              onChange={(event) =>
+                setFormDefaults({
+                  ...formDefaults,
+                  defaultType: event.target.value as TransactionType | ""
+                })
+              }
+            >
+              <option value="">{text.smartDefault}</option>
+              <option value="expense">{isZh ? "\u652f\u51fa" : "Expense"}</option>
+              <option value="income">{isZh ? "\u6536\u5165" : "Income"}</option>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">{text.defaultCategory}</p>
+            <ComboboxInput
+              value={formDefaults.defaultCategory}
+              onChange={(value) =>
+                setFormDefaults({ ...formDefaults, defaultCategory: value })
+              }
+              onClear={() =>
+                setFormDefaults({ ...formDefaults, defaultCategory: "" })
+              }
+              placeholder={text.smartDefault}
+              suggestions={suggestions.categories}
+              noResultsText={text.noDefaultsMatches}
+              countSuffix={text.defaultsCountUses}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">{text.defaultAccount}</p>
+            <ComboboxInput
+              value={formDefaults.defaultAccount}
+              onChange={(value) =>
+                setFormDefaults({ ...formDefaults, defaultAccount: value })
+              }
+              onClear={() =>
+                setFormDefaults({ ...formDefaults, defaultAccount: "" })
+              }
+              placeholder={text.smartDefault}
+              suggestions={suggestions.accounts}
+              noResultsText={text.noDefaultsMatches}
+              countSuffix={text.defaultsCountUses}
+            />
           </div>
         </CardContent>
       </Card>

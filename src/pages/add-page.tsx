@@ -1,9 +1,10 @@
-import { type FormEvent, useMemo, useRef, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { EmptyState } from "@/components/empty-state";
 import { PageHeader } from "@/components/page-header";
 import { PageShell } from "@/components/page-shell";
 import { StatCards } from "@/components/stat-cards";
-import { SuggestionInput } from "@/components/suggestion-input";
+import { ComboboxInput } from "@/components/combobox-input";
+import { CollapsibleSection } from "@/components/collapsible-section";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,8 +12,9 @@ import { Select } from "@/components/ui/select";
 import { useFormSuggestions } from "@/lib/form-suggestions";
 import { type Transaction, type TransactionType } from "@/lib/ledger-types";
 import { useLanguage } from "@/lib/language";
-import { tauriInvoke } from "@/lib/tauri";
+import { usePreferences } from "@/lib/language";
 import { useToast } from "@/lib/toast";
+import { tauriInvoke } from "@/lib/tauri";
 
 type FormState = {
   occurredOnDate: string;
@@ -53,10 +55,13 @@ function dateAndTimeToIso(dateValue: string, timeValue?: string): string | null 
 
 export function AddPage() {
   const { language } = useLanguage();
+  const { formDefaults } = usePreferences();
   const { pushToast } = useToast();
   const { suggestions, refreshSuggestions } = useFormSuggestions();
   const isZh = language === "zh";
   const amountInputRef = useRef<HTMLInputElement | null>(null);
+  const [defaultsApplied, setDefaultsApplied] = useState(false);
+  const [advancedOpen, setAdvancedOpen] = useState(false);
 
   const text = useMemo(
     () =>
@@ -115,7 +120,17 @@ export function AddPage() {
           ? "\u8fde\u7eed\u8bb0\u5f55\u51e0\u7b14\u4ea4\u6613\u540e\uff0c\u8fd9\u91cc\u4f1a\u81ea\u52a8\u51fa\u73b0\u5e38\u7528\u7ec4\u5408\u3002"
           : "After a few transactions, your most recent combinations will show up here.",
         comboUse: isZh ? "\u4f7f\u7528\u6b21\u6570" : "Used",
-        comboApply: isZh ? "\u4e00\u952e\u56de\u586b" : "Apply Combo"
+        comboApply: isZh ? "\u4e00\u952e\u56de\u586b" : "Apply Combo",
+        advancedTitle: isZh
+          ? "\u9ad8\u7ea7\u9009\u9879\uff08\u65f6\u95f4\u7cbe\u5ea6\uff09"
+          : "Advanced (Time Precision)",
+        noCategoryMatches: isZh
+          ? "\u65e0\u5339\u914d\u7c7b\u522b\uff0c\u76f4\u63a5\u8f93\u5165\u5373\u53ef"
+          : "No matches \u2014 type your own",
+        noAccountMatches: isZh
+          ? "\u65e0\u5339\u914d\u652f\u4ed8\u65b9\u5f0f\uff0c\u76f4\u63a5\u8f93\u5165\u5373\u53ef"
+          : "No matches \u2014 type your own",
+        countUses: isZh ? " \u6b21" : ""
       }) as const,
     [isZh]
   );
@@ -131,6 +146,27 @@ export function AddPage() {
     note: ""
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (defaultsApplied) return;
+
+    const accounts = suggestions.accounts;
+    const categories = suggestions.categories;
+    const hasData = accounts.length > 0 || categories.length > 0;
+    if (!hasData) return;
+
+    const smartAccount = formDefaults.defaultAccount || accounts[0]?.value;
+    const smartCategory = formDefaults.defaultCategory || categories[0]?.value;
+    const smartType = (formDefaults.defaultType || "expense") as TransactionType;
+
+    setForm((prev) => ({
+      ...prev,
+      type: smartType,
+      category: smartCategory || prev.category,
+      account: smartAccount || prev.account
+    }));
+    setDefaultsApplied(true);
+  }, [suggestions, formDefaults, defaultsApplied]);
 
   const applyQuickCombination = (combo: {
     type: TransactionType;
@@ -229,7 +265,8 @@ export function AddPage() {
         </CardHeader>
         <CardContent className="p-6 pt-0">
           <form className="space-y-4" onSubmit={(event) => void handleSubmit(event)}>
-            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+            {/* Row 1: Date + Amount */}
+            <div className="grid gap-3 md:grid-cols-2">
               <div className="space-y-2">
                 <p className="text-sm text-muted-foreground">{text.occurredDate}</p>
                 <Input
@@ -240,47 +277,6 @@ export function AddPage() {
                   }
                   required
                 />
-              </div>
-
-              <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">{text.useSpecificTime}</p>
-                <Select
-                  value={form.hasSpecificTime ? "date_time" : "date_only"}
-                  onChange={(event) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      hasSpecificTime: event.target.value === "date_time"
-                    }))
-                  }
-                >
-                  <option value="date_only">{text.dateOnly}</option>
-                  <option value="date_time">{text.dateWithTime}</option>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">{text.optionalTime}</p>
-                <Input
-                  type="time"
-                  value={form.occurredAtTime}
-                  onChange={(event) =>
-                    setForm((prev) => ({ ...prev, occurredAtTime: event.target.value }))
-                  }
-                  disabled={!form.hasSpecificTime}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">{text.type}</p>
-                <Select
-                  value={form.type}
-                  onChange={(event) =>
-                    setForm((prev) => ({ ...prev, type: event.target.value as TransactionType }))
-                  }
-                >
-                  <option value="income">{text.income}</option>
-                  <option value="expense">{text.expense}</option>
-                </Select>
               </div>
 
               <div className="space-y-2">
@@ -297,90 +293,152 @@ export function AddPage() {
                   required
                 />
               </div>
+            </div>
+
+            {/* Row 2: Type + Category + Account */}
+            <div className="grid gap-3 md:grid-cols-3">
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">{text.type}</p>
+                <Select
+                  value={form.type}
+                  onChange={(event) =>
+                    setForm((prev) => ({ ...prev, type: event.target.value as TransactionType }))
+                  }
+                >
+                  <option value="income">{text.income}</option>
+                  <option value="expense">{text.expense}</option>
+                </Select>
+              </div>
 
               <div className="space-y-2">
                 <p className="text-sm text-muted-foreground">{text.category}</p>
-                <SuggestionInput
+                <ComboboxInput
                   value={form.category}
-                  onChange={(event) =>
-                    setForm((prev) => ({ ...prev, category: event.target.value }))
-                  }
+                  onChange={(value) => setForm((prev) => ({ ...prev, category: value }))}
                   placeholder={text.categoryPlaceholder}
                   suggestions={suggestions.categories}
                   required
+                  noResultsText={text.noCategoryMatches}
+                  countSuffix={text.countUses}
                 />
               </div>
 
               <div className="space-y-2">
                 <p className="text-sm text-muted-foreground">{text.account}</p>
-                <SuggestionInput
+                <ComboboxInput
                   value={form.account}
-                  onChange={(event) =>
-                    setForm((prev) => ({ ...prev, account: event.target.value }))
-                  }
+                  onChange={(value) => setForm((prev) => ({ ...prev, account: value }))}
                   placeholder={text.accountPlaceholder}
                   suggestions={suggestions.accounts}
                   required
+                  noResultsText={text.noAccountMatches}
+                  countSuffix={text.countUses}
                 />
               </div>
+            </div>
 
-              <div className="space-y-2 md:col-span-2 lg:col-span-1">
-                <p className="text-sm text-muted-foreground">{text.note}</p>
-                <Input
-                  value={form.note}
-                  onChange={(event) => setForm((prev) => ({ ...prev, note: event.target.value }))}
-                />
+            {/* Advanced: Time Precision */}
+            <CollapsibleSection
+              open={advancedOpen}
+              onToggle={() => setAdvancedOpen((prev) => !prev)}
+              trigger={text.advancedTitle}
+            >
+              <div className="grid gap-3 md:grid-cols-2">
+                <div className="space-y-2">
+                  <p className="text-sm text-muted-foreground">{text.useSpecificTime}</p>
+                  <Select
+                    value={form.hasSpecificTime ? "date_time" : "date_only"}
+                    onChange={(event) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        hasSpecificTime: event.target.value === "date_time"
+                      }))
+                    }
+                  >
+                    <option value="date_only">{text.dateOnly}</option>
+                    <option value="date_time">{text.dateWithTime}</option>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <p className="text-sm text-muted-foreground">{text.optionalTime}</p>
+                  <Input
+                    type="time"
+                    value={form.occurredAtTime}
+                    onChange={(event) =>
+                      setForm((prev) => ({ ...prev, occurredAtTime: event.target.value }))
+                    }
+                    disabled={!form.hasSpecificTime}
+                  />
+                </div>
               </div>
+            </CollapsibleSection>
+
+            {/* Note */}
+            <div className="space-y-2">
+              <p className="text-sm text-muted-foreground">{text.note}</p>
+              <Input
+                value={form.note}
+                onChange={(event) => setForm((prev) => ({ ...prev, note: event.target.value }))}
+              />
             </div>
 
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? text.submitting : text.submit}
             </Button>
           </form>
-        </CardContent>
-      </Card>
 
-      <Card>
-        <CardHeader className="p-6">
-          <CardTitle>{text.combosTitle}</CardTitle>
-          <CardDescription>{text.combosDescription}</CardDescription>
-        </CardHeader>
-        <CardContent className="p-6 pt-0">
-          {suggestions.combinations.length === 0 ? (
-            <EmptyState title={text.combosEmptyTitle} description={text.combosEmptyDesc} />
-          ) : (
-            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-              {suggestions.combinations.map((combo) => (
-                <button
-                  key={`${combo.type}-${combo.category}-${combo.account}`}
-                  type="button"
-                  className="flex flex-col items-start gap-3 rounded-xl border bg-muted/20 p-4 text-left shadow-sm transition-colors hover:bg-muted/35"
-                  onClick={() => applyQuickCombination(combo)}
-                >
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span
-                      className={`inline-flex rounded-full border px-2 py-0.5 text-xs font-medium ${
-                        combo.type === "income"
-                          ? "border-emerald-100 bg-emerald-50 text-emerald-700"
-                          : "border-rose-100 bg-rose-50 text-rose-700"
-                      }`}
+          {/* Quick Combos (merged into form card) */}
+          {suggestions.combinations.length > 0 && (
+            <>
+              <hr className="my-6" />
+              <div className="space-y-3">
+                <div>
+                  <p className="text-sm font-medium">{text.combosTitle}</p>
+                  <p className="text-xs text-muted-foreground">{text.combosDescription}</p>
+                </div>
+                <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                  {suggestions.combinations.map((combo) => (
+                    <button
+                      key={`${combo.type}-${combo.category}-${combo.account}`}
+                      type="button"
+                      className="flex flex-col items-start gap-3 rounded-xl border bg-muted/20 p-4 text-left shadow-sm transition-colors hover:bg-muted/35"
+                      onClick={() => applyQuickCombination(combo)}
                     >
-                      {combo.type === "income" ? text.income : text.expense}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      {text.comboUse} {combo.count}
-                    </span>
-                  </div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span
+                          className={`inline-flex rounded-full border px-2 py-0.5 text-xs font-medium ${
+                            combo.type === "income"
+                              ? "border-emerald-100 bg-emerald-50 text-emerald-700"
+                              : "border-rose-100 bg-rose-50 text-rose-700"
+                          }`}
+                        >
+                          {combo.type === "income" ? text.income : text.expense}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {text.comboUse} {combo.count}
+                        </span>
+                      </div>
 
-                  <div className="space-y-1">
-                    <p className="text-base font-medium">{combo.category}</p>
-                    <p className="text-sm text-muted-foreground">{combo.account}</p>
-                  </div>
+                      <div className="space-y-1">
+                        <p className="text-base font-medium">{combo.category}</p>
+                        <p className="text-sm text-muted-foreground">{combo.account}</p>
+                      </div>
 
-                  <span className="text-xs text-muted-foreground">{text.comboApply}</span>
-                </button>
-              ))}
-            </div>
+                      <span className="text-xs text-muted-foreground">{text.comboApply}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Empty state for no combos yet (render inside form card) */}
+          {suggestions.combinations.length === 0 && (
+            <>
+              <hr className="my-6" />
+              <EmptyState title={text.combosEmptyTitle} description={text.combosEmptyDesc} />
+            </>
           )}
         </CardContent>
       </Card>

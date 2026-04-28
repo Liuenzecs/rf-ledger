@@ -1,10 +1,14 @@
 import { createContext, type ReactNode, useContext, useMemo, useState } from "react";
+import type { FormDefaults, TransactionType } from "@/lib/ledger-types";
 
 export type AppLanguage = "zh" | "en";
 export type DisplayCurrency = "CNY" | "USD";
 
 const LANGUAGE_STORAGE_KEY = "rf-ledger-language";
 const CURRENCY_STORAGE_KEY = "rf-ledger-display-currency";
+const DEFAULT_TYPE_KEY = "rf-ledger-default-type";
+const DEFAULT_CATEGORY_KEY = "rf-ledger-default-category";
+const DEFAULT_ACCOUNT_KEY = "rf-ledger-default-account";
 
 type LanguageContextValue = {
   language: AppLanguage;
@@ -12,6 +16,8 @@ type LanguageContextValue = {
   displayCurrency: DisplayCurrency;
   setDisplayCurrency: (currency: DisplayCurrency) => void;
   locale: string;
+  formDefaults: FormDefaults;
+  setFormDefaults: (defaults: FormDefaults) => void;
 };
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
@@ -38,6 +44,16 @@ function getInitialCurrency(): DisplayCurrency {
   return "CNY";
 }
 
+function getInitialFormDefaults(): FormDefaults {
+  if (typeof window === "undefined") {
+    return { defaultType: "", defaultCategory: "", defaultAccount: "" };
+  }
+  const defaultType = (window.localStorage.getItem(DEFAULT_TYPE_KEY) as TransactionType | "") || "";
+  const defaultCategory = window.localStorage.getItem(DEFAULT_CATEGORY_KEY) || "";
+  const defaultAccount = window.localStorage.getItem(DEFAULT_ACCOUNT_KEY) || "";
+  return { defaultType, defaultCategory, defaultAccount };
+}
+
 function localeForLanguage(language: AppLanguage): string {
   return language === "zh" ? "zh-CN" : "en-US";
 }
@@ -46,6 +62,9 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<AppLanguage>(() => getInitialLanguage());
   const [displayCurrency, setDisplayCurrencyState] = useState<DisplayCurrency>(() =>
     getInitialCurrency()
+  );
+  const [formDefaults, setFormDefaultsState] = useState<FormDefaults>(() =>
+    getInitialFormDefaults()
   );
 
   const setLanguage = (next: AppLanguage) => {
@@ -62,15 +81,26 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const setFormDefaults = (next: FormDefaults) => {
+    setFormDefaultsState(next);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(DEFAULT_TYPE_KEY, next.defaultType);
+      window.localStorage.setItem(DEFAULT_CATEGORY_KEY, next.defaultCategory);
+      window.localStorage.setItem(DEFAULT_ACCOUNT_KEY, next.defaultAccount);
+    }
+  };
+
   const value = useMemo(
     () => ({
       language,
       setLanguage,
       displayCurrency,
       setDisplayCurrency,
-      locale: localeForLanguage(language)
+      locale: localeForLanguage(language),
+      formDefaults,
+      setFormDefaults
     }),
-    [displayCurrency, language]
+    [displayCurrency, language, formDefaults]
   );
 
   return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;

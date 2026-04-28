@@ -133,3 +133,9 @@ export type StatsComparison = {
   expense: MetricComparison;
   tx_count: MetricComparison;
 };
+
+export type FormDefaults = {
+  defaultType: TransactionType | "";
+  defaultCategory: string;
+  defaultAccount: string;
+};

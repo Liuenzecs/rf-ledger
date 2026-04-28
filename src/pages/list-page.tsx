@@ -4,7 +4,7 @@ import { EmptyState } from "@/components/empty-state";
 import { PageHeader } from "@/components/page-header";
 import { PageShell } from "@/components/page-shell";
 import { StatCards } from "@/components/stat-cards";
-import { SuggestionInput } from "@/components/suggestion-input";
+import { ComboboxInput } from "@/components/combobox-input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -415,7 +415,14 @@ export function ListPage() {
           : "All visible records are pending deletion",
         pendingOnlyDesc: isZh
           ? "\u53ef\u4ee5\u5728 Toast \u4e2d\u64a4\u9500\uff0c\u6216\u7b49\u5f85 5 \u79d2\u540e\u5b8c\u6210\u5220\u9664\u3002"
-          : "Undo them from the toast, or wait 5 seconds for deletion to complete."
+          : "Undo them from the toast, or wait 5 seconds for deletion to complete.",
+        noCategoryMatches: isZh
+          ? "\u65e0\u5339\u914d\u7c7b\u522b\uff0c\u76f4\u63a5\u8f93\u5165\u5373\u53ef"
+          : "No matches \u2014 type your own",
+        noAccountMatches: isZh
+          ? "\u65e0\u5339\u914d\u652f\u4ed8\u65b9\u5f0f\uff0c\u76f4\u63a5\u8f93\u5165\u5373\u53ef"
+          : "No matches \u2014 type your own",
+        countUses: isZh ? " \u6b21" : ""
       }) as const,
     [isZh]
   );
@@ -957,17 +964,21 @@ export function ListPage() {
               <option value="expense">{text.expense}</option>
             </Select>
 
-            <SuggestionInput
+            <ComboboxInput
               placeholder={text.category}
               value={categoryInput}
-              onChange={(event) => setCategoryInput(event.target.value)}
+              onChange={(value) => setCategoryInput(value)}
               suggestions={suggestions.categories}
+              noResultsText={text.noCategoryMatches}
+              countSuffix={text.countUses}
             />
-            <SuggestionInput
+            <ComboboxInput
               placeholder={text.paymentMethod}
               value={accountInput}
-              onChange={(event) => setAccountInput(event.target.value)}
+              onChange={(value) => setAccountInput(value)}
               suggestions={suggestions.accounts}
+              noResultsText={text.noAccountMatches}
+              countSuffix={text.countUses}
             />
             <Input
               placeholder={text.keywordPlaceholder}
@@ -1255,21 +1266,25 @@ export function ListPage() {
               </Select>
             </div>
 
-            <SuggestionInput
+            <ComboboxInput
               placeholder={text.categoryPlaceholder}
               value={editForm.category}
-              onChange={(event) =>
-                setEditForm((prev) => ({ ...prev, category: event.target.value }))
+              onChange={(value) =>
+                setEditForm((prev) => ({ ...prev, category: value }))
               }
               suggestions={suggestions.categories}
+              noResultsText={text.noCategoryMatches}
+              countSuffix={text.countUses}
             />
-            <SuggestionInput
+            <ComboboxInput
               placeholder={text.accountPlaceholder}
               value={editForm.account}
-              onChange={(event) =>
-                setEditForm((prev) => ({ ...prev, account: event.target.value }))
+              onChange={(value) =>
+                setEditForm((prev) => ({ ...prev, account: value }))
               }
               suggestions={suggestions.accounts}
+              noResultsText={text.noAccountMatches}
+              countSuffix={text.countUses}
             />
             <Input
               placeholder={isZh ? "\u5907\u6ce8" : "Note"}
